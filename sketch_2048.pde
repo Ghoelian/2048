@@ -10,7 +10,7 @@ HashMap<Integer, Colour> colours = new HashMap<Integer, Colour>();
 boolean gameOver = false;
 boolean won = false;
 
-int score = 2048;
+int score = 0;
 
 PFont roboto;
 
@@ -155,26 +155,12 @@ void moveUp() {
       for (int i = y; i > 0; i--) {
         // If tile is on the bottom row, it can't move or add to another tile
         if (y > 0) {
-          if (grid[x][i - 1].value == 0) {
-            grid[x][i - 1].value = grid[x][i].value;
-            grid[x][i - 1].merged = grid[x][i].merged;
+          Tile current = grid[x][i];
+          Tile next = grid[x][i - 1];
 
-            grid[x][i].value = 0;
-            grid[x][i].merged = false;
-          } else if (!grid[x][i - 1].merged && !grid[x][i].merged && grid[x][i].value == grid[x][i - 1].value) {
-            grid[x][i - 1].value += grid[x][i].value;
-            grid[x][i - 1].merged = true;
-            
-            grid[x][i].value = 0;
-            
-            if (grid[x][i - 1].value > score) {
-              score = grid[x][i - 1].value;
+          boolean done = move(current, next);
 
-              if (grid[x][i - 1].value == 2048) {
-                won = true;
-              }
-            }
-            
+          if (done) {
             break;
           }
         }
@@ -189,27 +175,12 @@ void moveDown() {
       for (int i = y; i < gridHeight - 1; i++) {
         // If tile is on the bottom row, it can't move or add to another tile
         if (y < gridHeight) {
-          if (grid[x][i + 1].value == 0) {
-            grid[x][i + 1].value = grid[x][i].value;
-            grid[x][i + 1].merged = grid[x][i].merged;
+          Tile current = grid[x][i];
+          Tile next = grid[x][i + 1];
 
-            grid[x][i].value = 0;
+          boolean done = move(current, next);
 
-            grid[x][i].merged = false;
-          } else if (!grid[x][i].merged && !grid[x][i + 1].merged && grid[x][i].value == grid[x][i + 1].value) {
-            grid[x][i + 1].value += grid[x][i].value;
-            grid[x][i + 1].merged = true;
-
-            grid[x][i].value = 0;
-
-            if (grid[x][i + 1].value > score) {
-              score = grid[x][i + 1].value;
-
-              if (grid[x][i + 1].value == 2048) {
-                won = true;
-              }
-            }
-            
+          if (done) {
             break;
           }
         }
@@ -222,28 +193,13 @@ void moveLeft() {
   for (int y = 0; y < gridHeight; y++) {
     for (int x = 0; x < gridWidth; x++) {
       for (int j = x; j > 0; j--) {
-        // If tile is on the bottom row, it can't move or add to another tile
         if (x > 0) {
-          if (grid[j - 1][y].value == 0) {
-            grid[j - 1][y].value = grid[j][y].value;
-            grid[j - 1][y].merged = grid[j][y].merged;
+          Tile current = grid[j][y];
+          Tile next = grid[j - 1][y];
 
-            grid[j][y].value = 0;
-            grid[j][y].merged = false;
-          } else if (!grid[j][y].merged && !grid[j - 1][y].merged && grid[j][y].value == grid[j - 1][y].value) {
-            grid[j - 1][y].value += grid[j][y].value;
-            grid[j - 1][y].merged = true;
+          boolean done = move(current, next);
 
-            grid[j][y].value = 0;
-            
-            if (grid[j - 1][y].value > score) {
-              score = grid[j - 1][y].value;
-
-              if (grid[j - 1][y].value == 2048) {
-                won = true;
-              }
-            }
-            
+          if (done) {
             break;
           }
         }
@@ -256,31 +212,45 @@ void moveRight() {
   for (int y = 0; y < gridHeight; y++) {
     for (int x = gridWidth - 1; x >= 0; x--) {
       for (int j = x; j < gridHeight - 1; j++) {
-        // If tile is on the bottom row, it can't move or add to another tile
         if (x < gridHeight) {
-          if (grid[j + 1][y].value == 0) {
-            grid[j + 1][y].value = grid[j][y].value;
-            grid[j + 1][y].merged = grid[j][y].merged;
+          Tile current = grid[j][y];
+          Tile next = grid[j + 1][y];
 
-            grid[j][y].value = 0;
-            grid[j][y].merged = false;
-          } else if (!grid[j][y].merged && !grid[j + 1][y].merged && grid[j][y].value == grid[j + 1][y].value) {
-            grid[j + 1][y].value += grid[j][y].value;
-            grid[j + 1][y].merged = true;
+          boolean done = move(current, next);
 
-            grid[j][y].value = 0;
-            
-            if (grid[j + 1][y].value > score) {
-              score = grid[j + 1][y].value;
-
-              if (grid[j + 1][y].value == 2048) {
-                won = true;
-              }
-            }
+          if (done) {
             break;
           }
         }
       }
     }
   }
+}
+
+boolean move(Tile current, Tile next) {
+  // If tile is on the bottom row, it can't move or add to another tile
+  if (next.value == 0) {
+    next.value = current.value;
+    next.merged = current.merged;
+
+    current.value = 0;
+    current.merged = false;
+  } else if (!current.merged && !next.merged && current.value == next.value) {
+    next.value += current.value;
+    next.merged = true;
+
+    current.value = 0;
+
+    if (next.value > score) {
+      score = next.value;
+
+      if (next.value == 2048) {
+        won = true;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
 }
