@@ -173,7 +173,6 @@ void moveDown() {
   for (int x = 0; x < gridWidth; x++) {
     for (int y = gridHeight - 1; y >= 0; y--) {
       for (int i = y; i < gridHeight - 1; i++) {
-        // If tile is on the bottom row, it can't move or add to another tile
         if (y < gridHeight) {
           Tile current = grid[x][i];
           Tile next = grid[x][i + 1];
@@ -228,7 +227,6 @@ void moveRight() {
 }
 
 boolean move(Tile current, Tile next) {
-  // If tile is on the bottom row, it can't move or add to another tile
   if (next.value == 0) {
     next.value = current.value;
     next.merged = current.merged;
